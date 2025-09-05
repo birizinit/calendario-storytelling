@@ -1,0 +1,1227 @@
+import { useState, useEffect } from 'react';
+import { X, Calendar, Target, Users, FileText, CheckCircle, Plus, Trash2, Video, Clock, Lightbulb } from 'lucide-react';
+import { Button } from '@/components/ui/button.jsx';
+
+const StorytellingCard = ({ date, data, onSave, onClose }) => {
+  const [activeTab, setActiveTab] = useState('projects');
+  const [activeStoryProfile, setActiveStoryProfile] = useState('all');
+  const [formData, setFormData] = useState({
+    projects: [],
+    stories: [],
+    videoIdeas: [],
+    appointments: [],
+    groups: [],
+    funnel: [],
+    date: ''
+  });
+
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        projects: data.projects || [],
+        stories: (data.stories || []).map(story => ({
+          ...story,
+          profile: story.profile || 'Big Boss (Principal)' // Apenas garantir que tem perfil
+        })),
+        videoIdeas: data.videoIdeas || [],
+        appointments: data.appointments || [],
+        groups: data.groups || [],
+        funnel: data.funnel || [],
+        date: data.date || ''
+      });
+    }
+  }, [data]);
+
+  const profiles = [
+    'Big Boss (Principal)',
+    'Big Boss (Reserva)', 
+    'Big Boss (Trader)',
+    'Big Boss (Europa)'
+  ];
+
+  const objectives = [
+    { value: 'captacao', label: 'Captação de Leads', color: 'green' },
+    { value: 'prova_social', label: 'Prova Social', color: 'blue' },
+    { value: 'lancamento', label: 'Lançamento', color: 'gold' },
+    { value: 'engajamento', label: 'Engajamento', color: 'purple' }
+  ];
+
+  const statuses = [
+    { value: 'pendente', label: 'Pendente', color: 'yellow' },
+    { value: 'gravado', label: 'Gravado', color: 'blue' },
+    { value: 'postado', label: 'Postado', color: 'green' }
+  ];
+
+  const formatDate = (date) => {
+    return date.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const handleSave = () => {
+    onSave(formData);
+    onClose();
+  };
+
+  // Funções para Projetos
+  const addProject = () => {
+    const newProject = {
+      id: Date.now(),
+      name: '',
+      title: '',
+      objective: 'captacao',
+      plan: '',
+      responsible: 'Big Boss (Principal)',
+      storytelling: '',
+      status: 'pendente'
+    };
+    setFormData(prev => ({
+      ...prev,
+      projects: [...prev.projects, newProject]
+    }));
+  };
+
+  const updateProject = (id, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      projects: prev.projects.map(project => 
+        project.id === id ? { ...project, [field]: value } : project
+      )
+    }));
+  };
+
+  const removeProject = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      projects: prev.projects.filter(project => project.id !== id)
+    }));
+  };
+
+  // Funções para Stories
+  const addStory = () => {
+    const newStory = {
+      id: Date.now(),
+      title: 'Novo Story',
+      mainText: '',
+      observations: '',
+      cta: '',
+      projectId: '',
+      profile: 'Big Boss (Principal)',
+      postTime: '',
+      isSequence: false,
+      sequenceOrder: '',
+      isRecorded: false
+    };
+    setFormData(prev => ({
+      ...prev,
+      stories: [...prev.stories, newStory]
+    }));
+  };
+
+  const updateStory = (id, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      stories: prev.stories.map(story => 
+        story.id === id ? { ...story, [field]: value } : story
+      )
+    }));
+  };
+
+  const removeStory = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      stories: prev.stories.filter(story => story.id !== id)
+    }));
+  };
+
+  // Funções para Ideias de Vídeo
+  const addVideoIdea = () => {
+    const newIdea = {
+      id: Date.now(),
+      description: '',
+      referenceLink: '',
+      attachment: ''
+    };
+    setFormData(prev => ({
+      ...prev,
+      videoIdeas: [...prev.videoIdeas, newIdea]
+    }));
+  };
+
+  const updateVideoIdea = (id, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      videoIdeas: prev.videoIdeas.map(idea => 
+        idea.id === id ? { ...idea, [field]: value } : idea
+      )
+    }));
+  };
+
+  const removeVideoIdea = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      videoIdeas: prev.videoIdeas.filter(idea => idea.id !== id)
+    }));
+  };
+
+  // Funções para Compromissos
+  const addAppointment = () => {
+    const newAppointment = {
+      id: Date.now(),
+      title: '',
+      type: 'call',
+      time: '',
+      description: '',
+      status: 'agendado'
+    };
+    setFormData(prev => ({
+      ...prev,
+      appointments: [...prev.appointments, newAppointment]
+    }));
+  };
+
+  const updateAppointment = (id, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      appointments: prev.appointments.map(appointment => 
+        appointment.id === id ? { ...appointment, [field]: value } : appointment
+      )
+    }));
+  };
+
+  const removeAppointment = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      appointments: prev.appointments.filter(appointment => appointment.id !== id)
+    }));
+  };
+
+  // Funções para Grupos
+  const addGroup = () => {
+    const newGroup = {
+      id: Date.now(),
+      title: '',
+      type: 'video', // video ou audio
+      description: '',
+      link: '',
+      status: 'planejado'
+    };
+    setFormData(prev => ({
+      ...prev,
+      groups: [...prev.groups, newGroup]
+    }));
+  };
+
+  const updateGroup = (id, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      groups: prev.groups.map(group => 
+        group.id === id ? { ...group, [field]: value } : group
+      )
+    }));
+  };
+
+  const removeGroup = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      groups: prev.groups.filter(group => group.id !== id)
+    }));
+  };
+
+  // Funções para Funil
+  const addFunnel = () => {
+    const newFunnel = {
+      id: Date.now(),
+      title: '',
+      type: 'video', // video ou audio
+      description: '',
+      link: '',
+      status: 'planejado'
+    };
+    setFormData(prev => ({
+      ...prev,
+      funnel: [...prev.funnel, newFunnel]
+    }));
+  };
+
+  const updateFunnel = (id, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      funnel: prev.funnel.map(funnel => 
+        funnel.id === id ? { ...funnel, [field]: value } : funnel
+      )
+    }));
+  };
+
+  const removeFunnel = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      funnel: prev.funnel.filter(funnel => funnel.id !== id)
+    }));
+  };
+
+  // Funções de salvamento individual
+  const saveIndividualItem = (type, id) => {
+    // Salva apenas o item específico no localStorage
+    const currentData = JSON.parse(localStorage.getItem('storytelling-calendar-data') || '{}');
+    const dateKey = formatDateKey(date);
+    
+    if (!currentData[dateKey]) {
+      currentData[dateKey] = {
+        projects: [],
+        stories: [],
+        videoIdeas: [],
+        appointments: [],
+        groups: [],
+        funnel: [],
+        date: dateKey
+      };
+    }
+
+    // Atualiza apenas o tipo específico
+    currentData[dateKey][type] = formData[type];
+    
+    localStorage.setItem('storytelling-calendar-data', JSON.stringify(currentData));
+    
+    // Notifica que foi salvo (você pode adicionar uma notificação visual aqui)
+    console.log(`${type} item ${id} saved successfully`);
+  };
+
+  const tabs = [
+    { id: 'projects', label: 'Projetos', icon: Target, count: formData.projects.length },
+    { id: 'stories', label: 'Stories', icon: FileText, count: formData.stories.length },
+    { id: 'videoIdeas', label: 'Ideias de Vídeo', icon: Video, count: formData.videoIdeas.length },
+    { id: 'appointments', label: 'Compromissos', icon: Clock, count: formData.appointments.length },
+    { id: 'groups', label: 'Grupos', icon: Users, count: formData.groups.length },
+    { id: 'funnel', label: 'Funil', icon: Lightbulb, count: formData.funnel.length }
+  ];
+
+  return (
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="storytelling-card bg-gray-900/95 backdrop-blur-md border border-gray-700/50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-700/50">
+          <div className="flex items-center gap-3">
+            <Calendar className="h-6 w-6 text-gold" />
+            <div>
+              <h3 className="text-xl font-bold text-white">Planejamento do Dia</h3>
+              <p className="text-sm text-gray-400 capitalize">
+                {formatDate(date)}
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="text-gray-400 hover:text-white hover:bg-gray-800"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex border-b border-gray-700/50 bg-gray-800/30">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`
+                  flex items-center gap-2 px-6 py-4 text-sm font-medium transition-all
+                  ${activeTab === tab.id 
+                    ? 'text-gold border-b-2 border-gold bg-gray-800/50' 
+                    : 'text-gray-400 hover:text-white hover:bg-gray-800/30'
+                  }
+                `}
+              >
+                <Icon className="h-4 w-4" />
+                {tab.label}
+                {tab.count > 0 && (
+                  <span className="bg-gold text-black text-xs px-2 py-1 rounded-full">
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {/* Projetos Tab */}
+          {activeTab === 'projects' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h4 className="text-lg font-semibold text-white">Projetos do Dia</h4>
+                <Button
+                  onClick={addProject}
+                  className="bg-gold hover:bg-gold/90 text-black"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Projeto
+                </Button>
+              </div>
+
+              {formData.projects.length === 0 ? (
+                <div className="text-center py-12 text-gray-400">
+                  <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Nenhum projeto adicionado ainda</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {formData.projects.map((project) => (
+                    <div key={project.id} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50">
+                      <div className="flex items-center justify-between mb-4">
+                        <h5 className="text-white font-medium">
+                          {project.name || `Projeto #${project.id}`}
+                        </h5>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => saveIndividualItem('projects', project.id)}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            Salvar
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeProject(project.id)}
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Nome do Projeto
+                          </label>
+                          <input
+                            type="text"
+                            value={project.name}
+                            onChange={(e) => updateProject(project.id, 'name', e.target.value)}
+                            placeholder="Nome para identificação..."
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Título do Projeto
+                          </label>
+                          <input
+                            type="text"
+                            value={project.title}
+                            onChange={(e) => updateProject(project.id, 'title', e.target.value)}
+                            placeholder="Título detalhado..."
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Responsável
+                          </label>
+                          <select
+                            value={project.responsible}
+                            onChange={(e) => updateProject(project.id, 'responsible', e.target.value)}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          >
+                            {profiles.map((profile) => (
+                              <option key={profile} value={profile}>
+                                {profile}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Objetivo
+                          </label>
+                          <select
+                            value={project.objective}
+                            onChange={(e) => updateProject(project.id, 'objective', e.target.value)}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          >
+                            {objectives.map((obj) => (
+                              <option key={obj.value} value={obj.value}>
+                                {obj.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Status
+                          </label>
+                          <select
+                            value={project.status}
+                            onChange={(e) => updateProject(project.id, 'status', e.target.value)}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          >
+                            {statuses.map((status) => (
+                              <option key={status.value} value={status.value}>
+                                {status.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Plano do Projeto
+                        </label>
+                        <textarea
+                          value={project.plan}
+                          onChange={(e) => updateProject(project.id, 'plan', e.target.value)}
+                          placeholder="Descreva o plano e ações do projeto..."
+                          rows={3}
+                          className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50 resize-none"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Stories Tab */}
+          {activeTab === 'stories' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h4 className="text-lg font-semibold text-white">Stories por Perfil</h4>
+              </div>
+
+              {/* Profile Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div
+                  onClick={() => {
+                    console.log('Clicando em Todos os Perfis');
+                    setActiveStoryProfile('all');
+                  }}
+                  className={`bg-gray-800/50 rounded-lg p-4 border border-gray-700/50 cursor-pointer transition-all hover:bg-gray-700/50 ${
+                    activeStoryProfile === 'all' ? 'ring-2 ring-gold/50 bg-gray-700/50' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <h5 className="text-white font-medium">Todos os Perfis</h5>
+                    <span className="text-xs bg-gold/20 text-gold px-2 py-1 rounded-full">
+                      {formData.stories.length} stories
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-400">Ver todos os stories</p>
+                  <div className="mt-3 text-xs text-gold">
+                    Clique para ver todos
+                  </div>
+                </div>
+
+                {profiles.map((profile) => {
+                  const profileStories = formData.stories.filter(story => story.profile === profile);
+                  return (
+                    <div
+                      key={profile}
+                      onClick={() => {
+                        console.log('Clicando no perfil:', profile);
+                        setActiveStoryProfile(profile);
+                      }}
+                      className={`bg-gray-800/50 rounded-lg p-4 border border-gray-700/50 cursor-pointer transition-all hover:bg-gray-700/50 ${
+                        activeStoryProfile === profile ? 'ring-2 ring-gold/50 bg-gray-700/50' : ''
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <h5 className="text-white font-medium">{profile}</h5>
+                        <span className="text-xs bg-gold/20 text-gold px-2 py-1 rounded-full">
+                          {profileStories.length} stories
+                        </span>
+                      </div>
+                      
+                      {profileStories.length > 0 ? (
+                        <div className="space-y-2">
+                          <p className="text-sm text-gray-400">Últimos stories:</p>
+                          <div className="space-y-1">
+                            {profileStories.slice(-2).map((story) => (
+                              <div key={story.id} className="text-xs text-gray-300 bg-gray-900/50 rounded px-2 py-1">
+                                Story {story.sequenceOrder}: {story.mainText.substring(0, 30)}...
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-400">Nenhum story criado ainda</p>
+                      )}
+                      
+                      <div className="mt-3 text-xs text-gold">
+                        Clique para filtrar
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="flex items-center justify-between">
+                <h4 className="text-lg font-semibold text-white">
+                  {activeStoryProfile === 'all' ? 'Todos os Stories' : `Stories - ${activeStoryProfile}`}
+                </h4>
+                <Button
+                  onClick={addStory}
+                  className="bg-gold hover:bg-gold/90 text-black"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Story
+                </Button>
+              </div>
+
+              {(() => {
+                console.log('activeStoryProfile:', activeStoryProfile);
+                console.log('formData.stories:', formData.stories);
+                
+                const filteredStories = activeStoryProfile === 'all' 
+                  ? formData.stories 
+                  : formData.stories.filter(story => story.profile === activeStoryProfile);
+                
+                console.log('filteredStories:', filteredStories);
+                
+                return filteredStories.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400">
+                    <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>
+                      {activeStoryProfile === 'all' 
+                        ? 'Nenhum story adicionado ainda' 
+                        : `Nenhum story para ${activeStoryProfile}`
+                      }
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredStories.map((story, index) => (
+                    <div key={story.id} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50">
+                      <div className="flex items-center justify-between mb-4">
+                        <h5 className="text-white font-medium">{story.title}</h5>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => saveIndividualItem('stories', story.id)}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            Salvar
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeStory(story.id)}
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                              Projeto Vinculado
+                            </label>
+                            <select
+                              value={story.projectId}
+                              onChange={(e) => updateStory(story.id, 'projectId', e.target.value)}
+                              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                            >
+                              <option value="">Nenhum projeto</option>
+                              {formData.projects.map((project) => (
+                                <option key={project.id} value={project.id}>
+                                  {project.name || project.title || `Projeto #${project.id}`}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                              Perfil que vai postar
+                            </label>
+                            <select
+                              value={story.profile}
+                              onChange={(e) => updateStory(story.id, 'profile', e.target.value)}
+                              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                            >
+                              {profiles.map((profile) => (
+                                <option key={profile} value={profile}>
+                                  {profile}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                              Horário da postagem
+                            </label>
+                            <input
+                              type="time"
+                              value={story.postTime}
+                              onChange={(e) => updateStory(story.id, 'postTime', e.target.value)}
+                              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                              Número do Story
+                            </label>
+                            <input
+                              type="number"
+                              min="1"
+                              value={story.sequenceOrder}
+                              onChange={(e) => updateStory(story.id, 'sequenceOrder', e.target.value)}
+                              placeholder="Digite o número do story (ex: 1, 2, 5...)"
+                              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                          <label className="flex items-center gap-2 text-sm text-gray-300">
+                            <input
+                              type="checkbox"
+                              checked={story.isSequence}
+                              onChange={(e) => updateStory(story.id, 'isSequence', e.target.checked)}
+                              className="rounded border-gray-600 bg-gray-700 text-gold focus:ring-gold/50"
+                            />
+                            Faz parte de sequência no mesmo horário
+                          </label>
+
+                          <label className="flex items-center gap-2 text-sm text-gray-300">
+                            <input
+                              type="checkbox"
+                              checked={story.isRecorded}
+                              onChange={(e) => updateStory(story.id, 'isRecorded', e.target.checked)}
+                              className="rounded border-gray-600 bg-gray-700 text-gold focus:ring-gold/50"
+                            />
+                            Story já foi gravado
+                          </label>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Texto Principal
+                          </label>
+                          <textarea
+                            value={story.mainText}
+                            onChange={(e) => updateStory(story.id, 'mainText', e.target.value)}
+                            placeholder="Conteúdo principal do story..."
+                            rows={4}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50 resize-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Observações (emoção, tom, instruções)
+                          </label>
+                          <textarea
+                            value={story.observations}
+                            onChange={(e) => updateStory(story.id, 'observations', e.target.value)}
+                            placeholder="Ex: Tom empolgado, usar emoji de fogo, falar com energia..."
+                            rows={2}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50 resize-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            CTA (Call to Action)
+                          </label>
+                          <input
+                            type="text"
+                            value={story.cta}
+                            onChange={(e) => updateStory(story.id, 'cta', e.target.value)}
+                            placeholder="Ex: Acesse o link na bio, Comente 'QUERO'..."
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* Video Ideas Tab */}
+          {activeTab === 'videoIdeas' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h4 className="text-lg font-semibold text-white">Ideias de Vídeos</h4>
+                <Button
+                  onClick={addVideoIdea}
+                  className="bg-gold hover:bg-gold/90 text-black"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Ideia
+                </Button>
+              </div>
+
+              {formData.videoIdeas.length === 0 ? (
+                <div className="text-center py-12 text-gray-400">
+                  <Lightbulb className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Nenhuma ideia de vídeo adicionada ainda</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {formData.videoIdeas.map((idea) => (
+                    <div key={idea.id} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50">
+                      <div className="flex items-center justify-between mb-4">
+                        <h5 className="text-white font-medium">Ideia #{idea.id}</h5>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => saveIndividualItem('videoIdeas', idea.id)}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            Salvar
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeVideoIdea(idea.id)}
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Descrição da Ideia
+                          </label>
+                          <textarea
+                            value={idea.description}
+                            onChange={(e) => updateVideoIdea(idea.id, 'description', e.target.value)}
+                            placeholder="Descreva a ideia do vídeo..."
+                            rows={3}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50 resize-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Link de Referência
+                          </label>
+                          <input
+                            type="url"
+                            value={idea.referenceLink}
+                            onChange={(e) => updateVideoIdea(idea.id, 'referenceLink', e.target.value)}
+                            placeholder="https://..."
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Anexo/Arquivo
+                          </label>
+                          <input
+                            type="text"
+                            value={idea.attachment}
+                            onChange={(e) => updateVideoIdea(idea.id, 'attachment', e.target.value)}
+                            placeholder="Nome do arquivo ou caminho..."
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Appointments Tab */}
+          {activeTab === 'appointments' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h4 className="text-lg font-semibold text-white">Compromissos</h4>
+                <Button
+                  onClick={addAppointment}
+                  className="bg-gold hover:bg-gold/90 text-black"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Compromisso
+                </Button>
+              </div>
+
+              {formData.appointments.length === 0 ? (
+                <div className="text-center py-12 text-gray-400">
+                  <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Nenhum compromisso agendado ainda</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {formData.appointments.map((appointment) => (
+                    <div key={appointment.id} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50">
+                      <div className="flex items-center justify-between mb-4">
+                        <h5 className="text-white font-medium">Compromisso #{appointment.id}</h5>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeAppointment(appointment.id)}
+                          className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Título
+                          </label>
+                          <input
+                            type="text"
+                            value={appointment.title}
+                            onChange={(e) => updateAppointment(appointment.id, 'title', e.target.value)}
+                            placeholder="Nome do compromisso..."
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Tipo
+                          </label>
+                          <select
+                            value={appointment.type}
+                            onChange={(e) => updateAppointment(appointment.id, 'type', e.target.value)}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          >
+                            <option value="call">Call</option>
+                            <option value="reuniao">Reunião</option>
+                            <option value="gravacao">Gravação</option>
+                            <option value="entrega">Entrega</option>
+                            <option value="outro">Outro</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Horário
+                          </label>
+                          <input
+                            type="time"
+                            value={appointment.time}
+                            onChange={(e) => updateAppointment(appointment.id, 'time', e.target.value)}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Status
+                          </label>
+                          <select
+                            value={appointment.status}
+                            onChange={(e) => updateAppointment(appointment.id, 'status', e.target.value)}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          >
+                            <option value="agendado">Agendado</option>
+                            <option value="confirmado">Confirmado</option>
+                            <option value="realizado">Realizado</option>
+                            <option value="cancelado">Cancelado</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Descrição
+                        </label>
+                        <textarea
+                          value={appointment.description}
+                          onChange={(e) => updateAppointment(appointment.id, 'description', e.target.value)}
+                          placeholder="Detalhes do compromisso..."
+                          rows={2}
+                          className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50 resize-none"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Groups Tab */}
+          {activeTab === 'groups' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h4 className="text-lg font-semibold text-white">Conteúdo para Grupos</h4>
+                <Button
+                  onClick={addGroup}
+                  className="bg-gold hover:bg-gold/90 text-black"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Conteúdo
+                </Button>
+              </div>
+
+              {formData.groups.length === 0 ? (
+                <div className="text-center py-12 text-gray-400">
+                  <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Nenhum conteúdo para grupos adicionado ainda</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {formData.groups.map((group) => (
+                    <div key={group.id} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50">
+                      <div className="flex items-center justify-between mb-4">
+                        <h5 className="text-white font-medium">Conteúdo #{group.id}</h5>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeGroup(group.id)}
+                          className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Título
+                          </label>
+                          <input
+                            type="text"
+                            value={group.title}
+                            onChange={(e) => updateGroup(group.id, 'title', e.target.value)}
+                            placeholder="Título do conteúdo..."
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Tipo de Conteúdo
+                          </label>
+                          <select
+                            value={group.type}
+                            onChange={(e) => updateGroup(group.id, 'type', e.target.value)}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          >
+                            <option value="video">Vídeo</option>
+                            <option value="audio">Áudio</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Link/URL
+                          </label>
+                          <input
+                            type="url"
+                            value={group.link}
+                            onChange={(e) => updateGroup(group.id, 'link', e.target.value)}
+                            placeholder="https://..."
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Status
+                          </label>
+                          <select
+                            value={group.status}
+                            onChange={(e) => updateGroup(group.id, 'status', e.target.value)}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          >
+                            <option value="planejado">Planejado</option>
+                            <option value="gravado">Gravado</option>
+                            <option value="editado">Editado</option>
+                            <option value="postado">Postado</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Descrição
+                        </label>
+                        <textarea
+                          value={group.description}
+                          onChange={(e) => updateGroup(group.id, 'description', e.target.value)}
+                          placeholder="Descreva o conteúdo para grupos..."
+                          rows={3}
+                          className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50 resize-none"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Funnel Tab */}
+          {activeTab === 'funnel' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h4 className="text-lg font-semibold text-white">Conteúdo para Funil</h4>
+                <Button
+                  onClick={addFunnel}
+                  className="bg-gold hover:bg-gold/90 text-black"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Conteúdo
+                </Button>
+              </div>
+
+              {formData.funnel.length === 0 ? (
+                <div className="text-center py-12 text-gray-400">
+                  <Lightbulb className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Nenhum conteúdo para funil adicionado ainda</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {formData.funnel.map((funnel) => (
+                    <div key={funnel.id} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50">
+                      <div className="flex items-center justify-between mb-4">
+                        <h5 className="text-white font-medium">Conteúdo #{funnel.id}</h5>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFunnel(funnel.id)}
+                          className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Título
+                          </label>
+                          <input
+                            type="text"
+                            value={funnel.title}
+                            onChange={(e) => updateFunnel(funnel.id, 'title', e.target.value)}
+                            placeholder="Título do conteúdo..."
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Tipo de Conteúdo
+                          </label>
+                          <select
+                            value={funnel.type}
+                            onChange={(e) => updateFunnel(funnel.id, 'type', e.target.value)}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          >
+                            <option value="video">Vídeo</option>
+                            <option value="audio">Áudio</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Link/URL
+                          </label>
+                          <input
+                            type="url"
+                            value={funnel.link}
+                            onChange={(e) => updateFunnel(funnel.id, 'link', e.target.value)}
+                            placeholder="https://..."
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Status
+                          </label>
+                          <select
+                            value={funnel.status}
+                            onChange={(e) => updateFunnel(funnel.id, 'status', e.target.value)}
+                            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                          >
+                            <option value="planejado">Planejado</option>
+                            <option value="gravado">Gravado</option>
+                            <option value="editado">Editado</option>
+                            <option value="postado">Postado</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Descrição
+                        </label>
+                        <textarea
+                          value={funnel.description}
+                          onChange={(e) => updateFunnel(funnel.id, 'description', e.target.value)}
+                          placeholder="Descreva o conteúdo para funil..."
+                          rows={3}
+                          className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold/50 resize-none"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between p-6 border-t border-gray-700/50">
+          <div className="flex items-center gap-2 text-sm text-gray-400">
+            <span>Total:</span>
+            <span className="text-blue-400">{formData.projects.length} projetos</span>
+            <span className="text-green-400">{formData.stories.length} stories</span>
+            <span className="text-purple-400">{formData.videoIdeas.length} ideias</span>
+            <span className="text-red-400">{formData.appointments.length} compromissos</span>
+            <span className="text-orange-400">{formData.groups.length} grupos</span>
+            <span className="text-cyan-400">{formData.funnel.length} funil</span>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="ghost"
+              onClick={onClose}
+              className="text-gray-400 hover:text-white hover:bg-gray-800"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSave}
+              className="bg-gold hover:bg-gold/90 text-black font-medium"
+            >
+              Salvar Tudo
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default StorytellingCard;
+
