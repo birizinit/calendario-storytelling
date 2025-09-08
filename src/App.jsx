@@ -2,28 +2,29 @@ import { useState, useEffect } from 'react';
 import Calendar from './components/Calendar.jsx';
 import StorytellingCard from './components/StorytellingCard.jsx';
 import './App.css';
+import { supabase } from './lib/supabaseClient.js';
 
 function App() {
   const [storytellingData, setStorytellingData] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
   const [showCard, setShowCard] = useState(false);
 
-  // Carregar dados do localStorage na inicialização
+  // Carregar dados do Supabase
   useEffect(() => {
-    const savedData = localStorage.getItem('storytelling-calendar-data');
-    if (savedData) {
-      try {
-        setStorytellingData(JSON.parse(savedData));
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error);
+    const loadData = async () => {
+      const { data, error } = await supabase.from('storytelling').select('*');
+      if (error) {
+        console.error('Erro ao carregar Supabase:', error);
+        return;
       }
-    }
+      const formatted = {};
+      data.forEach(item => {
+        formatted[item.date] = item.data;
+      });
+      setStorytellingData(formatted);
+    };
+    loadData();
   }, []);
-
-  // Salvar dados no localStorage sempre que houver mudanças
-  useEffect(() => {
-    localStorage.setItem('storytelling-calendar-data', JSON.stringify(storytellingData));
-  }, [storytellingData]);
 
   const formatDateKey = (date) => {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -34,12 +35,23 @@ function App() {
     setShowCard(true);
   };
 
-  const handleSaveStorytellingData = (data) => {
+  const handleSaveStorytellingData = async (data) => {
     const dateKey = formatDateKey(selectedDate);
-    setStorytellingData(prev => ({
-      ...prev,
-      [dateKey]: data
-    }));
+    const newData = {
+      ...storytellingData,
+      [dateKey]: data,
+    };
+    setStorytellingData(newData);
+
+    // Upsert no Supabase
+    const { error } = await supabase.from('storytelling').upsert({
+      date: dateKey,
+      data,
+    }, { onConflict: 'date' });
+
+    if (error) {
+      console.error('Erro ao salvar no Supabase:', error);
+    }
   };
 
   const handleCloseCard = () => {
@@ -114,4 +126,3 @@ function App() {
 }
 
 export default App;
-
